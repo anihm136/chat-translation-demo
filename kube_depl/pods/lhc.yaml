@@ -1,0 +1,46 @@
+# vim: set ts=2 sts=2 sw=2:
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: livehelperchat
+spec:
+  selector:
+    matchLabels:
+      app: lhc
+  template:
+    metadata:
+      labels:
+        app: lhc
+    spec:
+      serviceAccountName: wp-service-account
+      containers:
+      - name: lhc
+        image: us-central1-docker.pkg.dev/akshayk-poc/live-chat-demo/lhc-custom:latest
+        env:
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: db_user_lhc
+        - name: DB_PWD
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: db_pwd_lhc
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: db_name_lhc
+      - name: cloud-sql-proxy
+        image: gcr.io/cloudsql-docker/gce-proxy:1.17
+        command:
+        - "/cloud_sql_proxy"
+        - "-ip_address_types=PRIVATE"
+        - "-instances=akshayk-poc:us-central1:anihm-wp-chat=tcp:3306"
+        securityContext:
+          runAsNonRoot: true
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "0.5"

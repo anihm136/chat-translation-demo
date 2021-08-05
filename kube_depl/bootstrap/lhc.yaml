@@ -1,0 +1,29 @@
+# vim: set ts=2 sts=2 sw=2:
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: livehelperchat
+spec:
+  template:
+    metadata:
+      labels:
+        app: lhc
+    spec:
+      serviceAccountName: wp-service-account
+      containers:
+      - name: lhc
+        image: us-central1-docker.pkg.dev/akshayk-poc/live-chat-demo/lhc-custom:install
+        imagePullPolicy: Always
+      - name: cloud-sql-proxy
+        image: gcr.io/cloudsql-docker/gce-proxy:1.17
+        command:
+        - "/cloud_sql_proxy"
+        - "-ip_address_types=PRIVATE"
+        - "-instances=akshayk-poc:us-central1:anihm-wp-chat=tcp:3306"
+        securityContext:
+          runAsNonRoot: true
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "0.5"
+      restartPolicy: Never

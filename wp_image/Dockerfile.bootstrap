@@ -1,0 +1,6 @@
+# vim: set ft=dockerfile:
+FROM wordpress:cli
+
+COPY wp-config.php .
+COPY bootstrap.sh .
+CMD /bin/bash bootstrap.sh

@@ -1,0 +1,13 @@
+# vim: set ts=2 sts=2 sw=2:
+apiVersion: v1
+kind: Service
+metadata:
+  name: translate-lb
+spec:
+  selector:
+    app: trl
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 8000
+    targetPort: 8000

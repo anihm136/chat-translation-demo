@@ -1,0 +1,53 @@
+# vim: set ts=2 sts=2 sw=2:
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+spec:
+  selector:
+    matchLabels:
+      app: wp
+  template:
+    metadata:
+      labels:
+        app: wp
+    spec:
+      serviceAccountName: wp-service-account
+      containers:
+      - name: wordpress
+        image: us-central1-docker.pkg.dev/akshayk-poc/live-chat-demo/wp-custom:latest
+        env:
+        - name: WORDPRESS_DB_HOST
+          value: "127.0.0.1"
+        - name: WORDPRESS_DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: db_user_wp
+        - name: WORDPRESS_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: db_pwd_wp
+        - name: WORDPRESS_DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: db_name_wp
+        - name: WP_HOME_URL
+          valueFrom:
+            configMapKeyRef:
+              name: live-chat-config
+              key: wp_lb_address
+      - name: cloud-sql-proxy
+        image: gcr.io/cloudsql-docker/gce-proxy:1.17
+        command:
+        - "/cloud_sql_proxy"
+        - "-ip_address_types=PRIVATE"
+        - "-instances=akshayk-poc:us-central1:anihm-wp-chat=tcp:3306"
+        securityContext:
+          runAsNonRoot: true
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "0.5"

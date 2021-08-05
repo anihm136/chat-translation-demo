@@ -1,0 +1,3 @@
+# vim: set ft=dockerfile:
+FROM webdevops/php-apache
+ADD --chown=application:application lhc_web /app
