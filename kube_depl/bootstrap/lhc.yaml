@@ -12,14 +12,14 @@ spec:
       serviceAccountName: wp-service-account
       containers:
       - name: lhc
-        image: us-central1-docker.pkg.dev/akshayk-poc/live-chat-demo/lhc-custom:install
+        image: lhc-custom:install
         imagePullPolicy: Always
       - name: cloud-sql-proxy
         image: gcr.io/cloudsql-docker/gce-proxy:1.17
         command:
         - "/cloud_sql_proxy"
         - "-ip_address_types=PRIVATE"
-        - "-instances=akshayk-poc:us-central1:anihm-wp-chat=tcp:3306"
+        - "-instances=<YOUR DB INSTANCE>"
         securityContext:
           runAsNonRoot: true
         resources:

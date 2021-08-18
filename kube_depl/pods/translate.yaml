@@ -18,7 +18,7 @@ spec:
           secretName: translate-service-account-key
       containers:
       - name: translate
-        image: us-central1-docker.pkg.dev/akshayk-poc/live-chat-demo/translate-service:latest
+        image: translate-service:latest
         volumeMounts:
         - name: service-account-key
           mountPath: /var/secrets/google

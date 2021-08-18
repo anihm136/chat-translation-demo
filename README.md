@@ -11,11 +11,10 @@ The entire application is deployed as a set of Kubernetes services. The translat
 Clone the source code to a folder, say `live-chat-demo`. Then, follow the steps in the given order
 ### Infrastructure
 1. [Create](https://cloud.google.com/kubernetes-engine/docs/how-to/creating-a-zonal-cluster) a new GKE cluster to run the applications
-2. [Create](https://cloud.google.com/sql/docs/mysql/create-manage-databases) two new MySQL databases - one for the wordpress installation and one for the chat application
-3. If desired, set up separate users for the two databases. Note the usernames, passwords and names of each database
-4. Enable private IP access for Cloud SQL. This will allow the Kubernetes nodes to connect to the database using the internal network
+2. [Create](https://cloud.google.com/sql/docs/mysql/create-manage-databases) two new Cloud SQL for MySQL databases - one for the wordpress installation and one for the chat application. Set up users for the databases. Enable private IP access for the databases to allow the Kubernetes nodes to connect using internal IP addresses
 
 ### Kubernetes Services
+_Note_:Services need to be created before the pods, as the external IP address is required to build one of the images. This is a hack, and should be fixed in the future
 1. Go to `kube_depl/services`. This folder contains YAML configurations to create services for all the components of the application
 2. Apply each configuration to create the services
 3. Wait for the services to obtain public IP addresses. Note the public IP address for each service
@@ -36,7 +35,7 @@ docker build . -f Dockerfile.bootstrap -t lhc-custom:install
 ```sh
 docker build . -t translate-service:latest
 ```
-5. Push all the images to a container registry. [Here](https://cloud.google.com/artifact-registry/docs/docker/quickstart) is a guide on creating a container registry using Google Artifact Registry
+5. [Optional] Push all the images to a container registry. [Here](https://cloud.google.com/artifact-registry/docs/docker/quickstart) is a guide on creating a container registry using Google Artifact Registry
 
 ### Credentials
 1. Enable and set up [workload identity](https://cloud.google.com/sql/docs/mysql/connect-kubernetes-engine#workload-identity) on the GKE cluster. The YAML config for creating the Kubernetes service account is provided in `kube_depl/config/serviceAccount.yaml`
@@ -52,9 +51,12 @@ kubectl create secret generic db-credentials --from-env-file kube_depl/config/en
 kubectl create secret generic translate-service-account-key --from-file=key.json=<name of private key file>.json
 ```
 
+_Note_: For each of the next two sections, the placeholder for the database connection string for your Cloud SQL databases need to be filled in
+
+
 ### Install applications
-1. Go to `kube_depl/bootstrap`. This folder contains YAML configurations for initial installation of each application. Modify each of the configurations with the path to the images created earlier
-2. Install the wordpress application. The default username and password are 'admin' -
+1. Go to `kube_depl/bootstrap`. This folder contains YAML configurations for initial installation of each application. If images were pushed to a container registry earlier, modify the image path to pull images from the registry
+2. Install the wordpress application. The default username and password are 'admin'
 ```sh
 kubectl apply -f kube_depl/bootstrap/wp.yaml
 ```  

@@ -4,6 +4,6 @@ kind: ConfigMap
 metadata:
   name: live-chat-config
 data:
-  wp_lb_address: "http://34.132.246.213:8080/"
-  translate_lb_address: "http://34.136.169.208:8000/"
-  lhc_lb_address: "http://34.136.1.66:8080/"
+  wp_lb_address: "<YOUR WORDPRESS SERVICE ADDRESS>"
+  translate_lb_address: "<YOUR TRANSLATE SERVICE ADDRESS>"
+  lhc_lb_address: "<YOUR LHC SERVICE ADDRESS>"

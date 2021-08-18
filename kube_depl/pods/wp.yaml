@@ -15,7 +15,7 @@ spec:
       serviceAccountName: wp-service-account
       containers:
       - name: wordpress
-        image: us-central1-docker.pkg.dev/akshayk-poc/live-chat-demo/wp-custom:latest
+        image: wp-custom:latest
         env:
         - name: WORDPRESS_DB_HOST
           value: "127.0.0.1"
@@ -44,7 +44,7 @@ spec:
         command:
         - "/cloud_sql_proxy"
         - "-ip_address_types=PRIVATE"
-        - "-instances=akshayk-poc:us-central1:anihm-wp-chat=tcp:3306"
+        - "-instances=<YOUR DB INSTANCE>"
         securityContext:
           runAsNonRoot: true
         resources:
